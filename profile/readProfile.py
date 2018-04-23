@@ -220,33 +220,41 @@ for index, item in enumerate(patternList):
 
 # If data subdirectory exists, it will save result file to output folder
 # otherwise it save result to working directory
-location = os.getcwd() + ("\\output" if os.path.isdir("data") else "")
+#location = os.getcwd() + ("\\data" if os.path.isdir("data") else "")
 
+
+if os.path.isdir("data"):
+	location = os.getcwd() + "\\data" 
+	logPath = os.getcwd() + "\\output" 
+else:
+	location = logPath = os.getcwd()
+	
 outcome = ""
 
 header = "Old Order, Filename, " + ", ".join(tagList)
+header = "Module, Old Order, Filename, " + ", ".join(tagList)
 
 logName = ""
 
 
 for root, subdirs, files in os.walk(location):
+	module = root.split('\\')[-1]
 	if root == location:
 		logName = "log-"+root.split('\\')[-1]+".csv"
-		print(logName)
 		continue
 
-	automationList = [root, header]
+	#automationList = [root, header]
+	automationList = [header]
 	for index, file in enumerate(files):
 		filenamepath = os.path.join(root, file)
 		report = readProfile(filenamepath)
-		#record = str(index+1) + ", "+file + ", "+ getValue(pingPattern, report)
-		record = str(index+1) + ", " + file
+		#record = module + ", " + str(index+1) + ", "+file + ", "+ getValue(pingPattern, report)
+		record = module  + ", " + str(index+1) + ", " + file
 		for pat in patternList:
 			record +=  ", "+ getValue(pat, report)
 		
 		automationList.append(record)
 	outcome += "\n".join(automationList) +"\n"
-logName = location + "\\" + logName
-print(logName)
+logName = logPath + "\\" + logName
 logTestGrid(logName, outcome)	
 
